@@ -16,6 +16,16 @@ public class ResponseRoom {
     
     private String operator;
     
+    private List<String> dieChess;
+
+    public List<String> getDieChess() {
+        return dieChess;
+    }
+
+    public void setDieChess(List<String> dieChess) {
+        this.dieChess = dieChess;
+    }
+
     public String getRoomNumber() {
         return roomNumber;
     }

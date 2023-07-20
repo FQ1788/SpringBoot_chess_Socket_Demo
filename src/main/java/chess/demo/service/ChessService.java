@@ -4,6 +4,7 @@ import chess.demo.bean.Chess;
 import chess.demo.bean.Room;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 @Service
@@ -88,7 +89,12 @@ public class ChessService {
             return;
         }
     }
-    
+
+    /**
+     * 玩家第二次點擊
+     * @param room
+     * @param coordinate
+     */
     private void twoClick(Room room, Integer[] coordinate){
         Integer[] pick = room.getPick();
         Chess[][] chessboard = room.getChessboard();
@@ -126,6 +132,9 @@ public class ChessService {
         }
         
         if(checkMove){
+            if(twoChess != null){
+                room.getDieChess().add(twoChess.getChessNo());
+            }
             chessboard[coordinate[0]][coordinate[1]] = oneChess;
             chessboard[pick[0]][pick[1]] = null;
             room.nextPlayer();
@@ -228,20 +237,18 @@ public class ChessService {
 
         return checkEat(chessboard[oneY][X],chessboard[twoY][X]);
     }
-    
-    public static void main(String[] args){
-        ChessService chessService = new ChessService();
-        Room room = new Room();
-        Chess[][] chessarr = chessService.startGame();
-        room.setChessboard(chessarr);
-        
-        Chess chess = chessarr[0][4];
-        
-        System.out.println("chessOpen : " + chess.getOpen());
-        chess.setOpen(true);
-        System.out.println("cheng : " + chessarr[0][4].getOpen());
-        System.out.println("chess1 : " + room.getChessboard()[0][4].getOpen());
-        chessarr[0][4] = null;
-        System.out.println("chess2 : " + room.getChessboard()[0][4]);
+
+    /**
+     * 重新開始
+     * @param room
+     * @return
+     */
+    public Room restartGame(Room room){
+        room.setChessboard(startGame());
+        room.setOperator("");
+        room.setCamp("");
+        room.setPick(null);
+        room.setDieChess(new ArrayList<>());
+        return room;
     }
 }

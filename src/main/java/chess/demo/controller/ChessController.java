@@ -26,4 +26,13 @@ public class ChessController {
         System.out.println(" requestUser --> " + requestUser.getPlayer());
         return roomService.playerAction(requestUser);
     }
+
+    @MessageMapping("/restartGame/{roomNumber}")
+    @SendTo("/out/{roomNumber}")
+    public ResponseRoom restartGame(@DestinationVariable("roomNumber") String roomNumber, @RequestBody RequestUser requestUser){
+        System.out.println(" playerAction -- start!!");
+        System.out.println(" roomNumber --> " + roomNumber);
+        System.out.println(" requestUser --> " + requestUser.getPlayer());
+        return roomService.restartRoom(requestUser);
+    }
 }

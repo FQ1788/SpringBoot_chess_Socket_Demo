@@ -46,4 +46,18 @@ public class RoomController {
         
         return responseRoom;
     }
+    
+    @RequestMapping("/removeRoom")
+    public void removeRoom(@RequestBody RequestUser player){
+        System.out.println("-- removeRoom -- ");
+        
+        String roomNumber = player.getRoomNumber();
+        System.out.println(" Room -> " + roomNumber);
+        System.out.println(" Player -> " + player.getPlayer());
+        ResponseRoom responseRoom = roomService.removeRoom(player);
+        
+        if("100".equals(responseRoom.getOperateCode())){
+            SimpMessagingTemplate.convertAndSend("/out/" + roomNumber, responseRoom);
+        }
+    }
 }

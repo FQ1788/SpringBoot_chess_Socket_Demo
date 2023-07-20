@@ -1,14 +1,13 @@
 package chess.demo.service;
 
 import chess.demo.bean.RequestUser;
-import chess.demo.bean.ResponseChess;
 import chess.demo.bean.ResponseRoom;
 import chess.demo.bean.Room;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -30,11 +29,13 @@ public class RoomService {
         room.setChessboard(chessService.startGame());
         room.setRoomNumber(roomNumber);
         room.setPlayerOne(playerName);
+        room.setDieChess(new ArrayList<>());
         rooms.put(roomNumber,room);
         ResponseRoom responseRoom = new ResponseRoom();
         responseRoom.setRoomNumber(roomNumber);
         responseRoom.setPlayerOne(playerName);
         responseRoom.setChessboard(room.getChessList());
+        responseRoom.setDieChess(room.getDieChess());
         responseRoom.setOperateCode("200");
         return responseRoom;
     };
@@ -70,21 +71,24 @@ public class RoomService {
         responRoom.setPlayerOne(room.getPlayerOne());
         responRoom.setPlayerTwo(room.getPlayerTwo());
         responRoom.setChessboard(room.getChessList());
+        responRoom.setDieChess(room.getDieChess());
         responRoom.setOperateCode("200"); //200 OK
         return responRoom;
     };
 
     /**
      * 移除房間
-     * @param roomNumber
+     * @param player
      * @return
      */
-    public String removeRoom(String roomNumber){
-        String result = "NO";
-        if(rooms.remove(roomNumber) != null){
-            result = "OK";
+    public ResponseRoom removeRoom(RequestUser player){
+        ResponseRoom responseRoom = new ResponseRoom();
+        String code = "404";
+        if(rooms.remove(player.getRoomNumber()) != null){
+            code = "100";
         };
-        return result;
+        responseRoom.setOperateCode(code);
+        return responseRoom;
     }
 
     /**
@@ -121,8 +125,29 @@ public class RoomService {
         responRoom.setPlayerOne(room.getPlayerOne());
         responRoom.setPlayerTwo(room.getPlayerTwo());
         responRoom.setOperator(room.getOperator());
+        responRoom.setDieChess(room.getDieChess());
         responRoom.setOperateCode("200");
-        responRoom.getChessboard().get(room.getPick()[0]).get(room.getPick()[1]).setPush(true);
+        if(room.getPick() != null){
+            responRoom.getChessboard().get(room.getPick()[0]).get(room.getPick()[1]).setPush(true);
+        }
         return responRoom;
+    }
+
+    /**
+     * 重新開始
+     * @param player
+     * @return
+     */
+    public ResponseRoom restartRoom(RequestUser player){
+        ResponseRoom responseRoom = new ResponseRoom();
+        Room room = rooms.get(player.getRoomNumber());
+        responseRoom.setChessboard(chessService.restartGame(room).getChessList());
+        responseRoom.setRoomNumber(room.getRoomNumber());
+        responseRoom.setPlayerOne(room.getPlayerOne());
+        responseRoom.setPlayerTwo(room.getPlayerTwo());
+        responseRoom.setOperator(room.getOperator());
+        responseRoom.setDieChess(room.getDieChess());
+        responseRoom.setOperateCode("200");
+        return responseRoom;
     }
 }
