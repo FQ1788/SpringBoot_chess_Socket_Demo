@@ -98,40 +98,12 @@ public class ChessService {
     private void twoClick(Room room, Integer[] coordinate){
         Integer[] pick = room.getPick();
         Chess[][] chessboard = room.getChessboard();
-        Chess oneChess = chessboard[pick[0]][pick[1]];
-        Chess twoChess = chessboard[coordinate[0]][coordinate[1]];
-        int distanceY = Math.abs(pick[0] - coordinate[0]);
-        int distanceX = Math.abs(pick[1] - coordinate[1]);
-        boolean checkMove = false;
-
-        //目標位置為空。
-        if(twoChess == null){
-            //移動步數異常，無效操作。
-            if(distanceY + distanceX != 1){
-                room.setPick(null);
-                return;
-            }else{
-                checkMove = true;
-            }
-        }else{
-            //除了砲以外移動異常、目標位置沒翻開、目標位置同陣營，無效操作。
-            if(oneChess.getLevel() != 1 && distanceY + distanceX != 1 || !twoChess.getOpen() || twoChess.getCamp().equals(room.getCamp())){
-                room.setPick(null);
-                return;
-            }
-            
-            if(oneChess.getLevel() == 1){ //砲的移動 比較特別 
-                if(distanceX == 0 && distanceY != 0){
-                    checkMove = checkY(chessboard,pick[0],coordinate[0],pick[1]);
-                }else if(distanceY == 0 && distanceX != 0){
-                    checkMove = checkX(chessboard,pick[1],coordinate[1],pick[0]);
-                }
-            }else{
-                checkMove = checkEat(oneChess,twoChess);
-            }
-        }
+        boolean checkMove = checkMove(pick,chessboard,coordinate,room.getCamp());
         
         if(checkMove){
+            Chess oneChess = chessboard[pick[0]][pick[1]];
+            Chess twoChess = chessboard[coordinate[0]][coordinate[1]];
+            
             if(twoChess != null){
                 room.getDieChess().add(twoChess.getChessNo());
             }
@@ -142,6 +114,47 @@ public class ChessService {
 
         room.setPick(null);
         return;
+    }
+
+    /**
+     * 判斷棋子是否可以移動
+     * @param pick 第一次點擊的座標
+     * @param chessboard 當前棋盤內容
+     * @param coordinate 第二次點擊的座標
+     * @param roomCamp 操作者陣營
+     * @return boolean 移動成功與否
+     */
+    public boolean checkMove(Integer[] pick,Chess[][] chessboard,Integer[] coordinate,String roomCamp){
+        Chess oneChess = chessboard[pick[0]][pick[1]];
+        Chess twoChess = chessboard[coordinate[0]][coordinate[1]];
+        int distanceY = Math.abs(pick[0] - coordinate[0]);
+        int distanceX = Math.abs(pick[1] - coordinate[1]);
+        
+        //目標位置為空。
+        if(twoChess == null){
+            //移動步數異常，無效操作。
+            if(distanceY + distanceX != 1){
+                return false;
+            }else{
+                return true;
+            }
+        }else{
+            //除了砲以外移動異常、目標位置沒翻開、目標位置同陣營，無效操作。
+            if(oneChess.getLevel() != 1 && distanceY + distanceX != 1 || !twoChess.getOpen() || twoChess.getCamp().equals(roomCamp)){
+                return false;
+            }
+
+            if(oneChess.getLevel() == 1){ //砲的移動 比較特別 
+                if(distanceX == 0 && distanceY != 0){
+                    return checkY(chessboard,pick[0],coordinate[0],pick[1]);
+                }else if(distanceY == 0 && distanceX != 0){
+                    return checkX(chessboard,pick[1],coordinate[1],pick[0]);
+                }
+            }else{
+                return checkEat(oneChess,twoChess);
+            }
+        }
+        return false;
     }
 
     /**

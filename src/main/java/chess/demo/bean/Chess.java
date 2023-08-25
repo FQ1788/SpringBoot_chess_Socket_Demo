@@ -13,14 +13,11 @@ public class Chess {
     private boolean open;
 
     public Chess(String chessNo,boolean open){
-        for(ChessEnum chessEnum : ChessEnum.values()){
-            if(chessEnum.name().equals(chessNo)){
-                this.open = open;
-                this.chessNo = chessNo;
-                this.camp = chessEnum.getCamp();
-                this.level = chessEnum.getLevel();
-            }
-        }
+        ChessEnum chess = ChessEnum.valueOf(chessNo);
+        this.open = open;
+        this.chessNo = chessNo;
+        this.camp = chess.getCamp();
+        this.level = chess.getLevel();
     }
 
     public String getChessNo() {
