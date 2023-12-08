@@ -60,4 +60,12 @@ public class RoomController {
             SimpMessagingTemplate.convertAndSend("/out/" + roomNumber, responseRoom);
         }
     }
+
+    @RequestMapping("/watchRoom")
+    public ResponseRoom watchRoom(@RequestBody RequestUser player){
+        System.out.println(" watchRoom -- start !!");
+        System.out.println(" Room -> " + player.getRoomNumber());
+        System.out.println(" Player -> 觀眾");
+        return roomService.watchRoom(player);
+    }
 }
